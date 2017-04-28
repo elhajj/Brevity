@@ -20,7 +20,7 @@ for link in soup.find_all(href=re.compile('28')):
 
 print len(issue), 'pages in this issue'
 
-# get a single story
+# get a single story and extract HTML
 
 address = 'https://www.creativenonfiction.org/brevity/past%20issues/brev28/calderazzo_accident.html'
 uh = urllib.urlopen(address)
@@ -31,3 +31,4 @@ print 'Retrieved',len(data),'characters'
 soup = BeautifulSoup(data, 'html.parser')
 
 print soup.title
+
