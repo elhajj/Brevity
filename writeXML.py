@@ -18,3 +18,6 @@ xmlns:wp="http://wordpress.org/export/1.2/" version="2.0">
 '''
 tree = ET.ElementTree(rss)
 tree.write("filename.xml")
+
+# https://wordpress.stackexchange.com/questions/82399/what-is-the-required-format-for-importing-posts-into-wordpress
+# http://stackoverflow.com/questions/4997848/emitting-namespace-specifications-with-elementtree-in-python
