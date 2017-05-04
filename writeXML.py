@@ -58,7 +58,7 @@ ET.SubElement(item, 'pubDate').text = None
 ET.SubElement(item, 'dc:creator').text = None
 ET.SubElement(item, 'guid', isPermaLink='false' ).text = None
 ET.SubElement(item, 'description').text = None
-ET.SubElement(item, 'content:encoded').text = None
+ET.SubElement(item, 'content:encoded')
 ET.SubElement(item, 'excerpt:encoded').text = None
 ET.SubElement(item, 'wp:post_id').text = None
 ET.SubElement(item, 'wp:post_date').text = '2000-01-01 19:20:00'
@@ -66,10 +66,10 @@ ET.SubElement(item, 'wp:post_date_gmt').text = None
 ET.SubElement(item, 'wp:comment_status').text = 'open'
 ET.SubElement(item, 'wp:ping_status').text = 'open'
 ET.SubElement(item, 'wp:post_name').text = None
-ET.SubElement(item, 'wp:status').text = 'publish'
+ET.SubElement(item, 'wp:status').text = 'draft'
 ET.SubElement(item, 'wp:post_parent').text = '0'
 ET.SubElement(item, 'wp:menu_order').text = '0'
-ET.SubElement(item, 'wp:type').text = 'post'
+ET.SubElement(item, 'wp:post_type').text = 'post'
 ET.SubElement(item, 'wp:post_password').text = None
 ET.SubElement(item, 'wp:is_sticky').text = '0'
 ET.SubElement(item, 'category', nicename='characterization', domain='post_tag' ).text = 'characterization'
@@ -85,23 +85,33 @@ ET.SubElement(postmeta, 'wp:meta_value').text = 'JIM BEAM'
 tree = ET.ElementTree(rss)
 root = tree.getroot()
 
-for child in root[0][10]:
-    print child.text
+#for child in root[0][10]:
+#    print child.text
 
 title2 = 'This is a new title'
 creator = 'elhajj'
-story2 = 'This is a new story'
-
+story2 = '''This is a new story. This is a story
+with a line break. <br/><p>this is a p tag.
+'''
+story2 = CDATA(story2)
+'''
 title2 = CDATA(title2)
 creator = CDATA(creator)
-story2 = CDATA(story2)
+
 
 root[0][10][0].append(title2)
 root[0][10][3].append(creator)
+'''
 root[0][10][6].append(story2)
+#root[0][10][6].remove(None)
 
-for child in root[0][10]:
-    print child.text, 'after'
+root[0][10][0].text = title2
+root[0][10][3].text = creator
+#root[0][10][6].text = story2
+
+
+#for child in root[0][10]:
+    #print child.text, 'after'
 
 
 tree.write("filename.xml",
