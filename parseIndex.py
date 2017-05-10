@@ -22,3 +22,4 @@ for link in soup.find_all(href=re.compile('28')):
     issue.append(link['href'])
 
 print len(issue), 'pages in this issue'
+

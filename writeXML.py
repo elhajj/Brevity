@@ -109,7 +109,6 @@ root[0][10][0].text = title2
 root[0][10][3].text = creator
 #root[0][10][6].text = story2
 
-
 #for child in root[0][10]:
     #print child.text, 'after'
 
