@@ -16,6 +16,7 @@ title = title[0].text.lstrip()
 
 author = soup.select('strong > a')
 author = list(author)[0].text
+author = author.upper()
 
 cells = soup.find_all('td')
 story = cells[len(cells)-1]
