@@ -15,12 +15,15 @@ print 'Retrieved',len(data),'characters'
 
 soup = BeautifulSoup(data, 'html.parser')
 
-title = soup.find_all('div', 'storytitle')
-title = title[0].text.lstrip()
+title = soup.find('div', {'class': 'storytitle'}).get_text(strip=True)
+issue = soup.find('div', {'class': 'issuenumber'}).get_text(strip=True)
+issue = issue[7:]
 
-author = soup.title.contents
-author = str(author)
-author = author[15:-2].upper() # this will break < issue 10
+#title = soup.find_all('div', 'storytitle')
+#title = title[0].text.lstrip()
+
+author = soup.title.get_text(strip=True)
+author = author[12:].upper() # this will break < issue 10
 
 story = soup.find_all('p')
 
