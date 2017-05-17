@@ -1,7 +1,10 @@
+import urllib
 import xml.etree.ElementTree as ET
+from bs4 import BeautifulSoup
+import re
 
 # start CDATA hack
-'''
+
 
 def CDATA(text=None):
     element = ET.Element('![CDATA[')
@@ -21,7 +24,68 @@ def _serialize_xml(write, elem, encoding, qnames, namespaces):
 ET._serialize_xml = ET._serialize['xml'] = _serialize_xml
 # end CDATA hack
 
+
+
+
+address = 'https://www.creativenonfiction.org/brevity/past%20issues/brev28/calderazzo_accident.html'
+
+uh = urllib.urlopen(address)
+print 'Retrieving', address
+data = uh.read()
+print 'Retrieved',len(data),'characters'
+
+soup = BeautifulSoup(data, 'html.parser')
+
+title = soup.find('div', {'class': 'storytitle'}).get_text(strip=True)
+issue = soup.find('div', {'class': 'issuenumber'}).get_text(strip=True)
+issue = issue[7:]
+
+#author = soup.title.get_text(strip=True)
+#author = author[12:].upper() # this will break < issue 10
+
+author = soup.find_all(text=re.compile('^By'))
+author = author[0].string
+author = author[3:]
+
+story = soup.find_all('p')
+
+shrtaddress = address[:64-len(address)] # this will break < issue 10
+image = soup.find_all('img')
+if len(soup.find_all('img')) != 2:
+    print "image is probably broken for", title
+image = image[1]
+addy_append = image.get('src')
+image['src'] = shrtaddress+addy_append
+
 '''
+#insert the "__", remove the hr
+hr = soup.find_all('hr', align='left')
+if len(hr) != 1:
+    hr = soup.find_all('hr')
+hr = hr[0].wrap(soup.new_tag('p'))
+hr = hr.p
+tag = soup.new_tag('p')
+tag.string = '__\n'
+hr.insert(0,tag)
+'''
+'''
+ps = soup.find_all('p')
+
+for i in ps:
+    print i
+    if "Brevity" in i.text:
+        i.decompose()        
+    if "strong" in i.name:
+        i.decompose()
+'''
+
+
+print 'Title:', title
+print 'Author:', author
+print 'Issue', issue
+print 'Lines', len(story)
+
+# create xml
 
 rss = ET.Element("rss")
 rss.set('version', '2.0')
@@ -35,7 +99,7 @@ channel = ET.SubElement(rss, "channel")
 ET.SubElement(channel, 'title').text = 'Brevity: A Journal of Concise Literary Nonfiction'
 ET.SubElement(channel, 'link').text = 'http://brevitymag.com'
 ET.SubElement(channel, 'description').text = 'Brevity: The journal devoted exclusively to the concise literary nonfiction.'
-ET.SubElement(channel, 'pubDate').text = 'Fri, 28 Apr 2017 21:01:20 +0000'
+ET.SubElement(channel, 'pubDate').text = 'Fri, 28 Apr 2017 21:01:20 +0000' # is this used in item?
 ET.SubElement(channel, 'language').text = 'en-US'
 ET.SubElement(channel, 'wp:wxr_version').text = '1.2'
 ET.SubElement(channel, 'wp:base_site_url').text = 'http://brevitymag.com'
@@ -49,14 +113,14 @@ ET.SubElement(author, 'wp:author_first_name').text = 'Tim'
 ET.SubElement(author, 'wp:author_last_name').text = 'Elhajj'
 category = ET.SubElement(channel, 'wp:category')
 ET.SubElement(category, 'wp:term_id').text = '207'
-ET.SubElement(category, 'wp:category-nicename').text = 'issue-29-2009'
+ET.SubElement(category, 'wp:category-nicename').text = 'issue-28-2008'
 ET.SubElement(category, 'wp:category-parent').text = None
-ET.SubElement(category, 'wp:cat_name').text = 'Issue 29 / January 2009'
+ET.SubElement(category, 'wp:cat_name').text = 'Issue 28 / Fall 2008'
 
 item = ET.SubElement(channel, "item")
 ET.SubElement(item, 'title').text = None
 ET.SubElement(item, 'link').text = None
-ET.SubElement(item, 'pubDate').text = None
+ET.SubElement(item, 'pubDate').text = None # date?
 ET.SubElement(item, 'dc:creator').text = None
 ET.SubElement(item, 'guid', isPermaLink='false' ).text = None
 ET.SubElement(item, 'description').text = None
@@ -87,39 +151,13 @@ ET.SubElement(postmeta, 'wp:meta_value').text = 'JIM BEAM'
 tree = ET.ElementTree(rss)
 root = tree.getroot()
 
-#for child in root[0][10]:
-#    print child.text
+story = CDATA(story)
 
-title2 = 'This is a new title'
-creator = 'elhajj'
-story2 = '''This is a new story. This is a story
-with a line break. <br/><p>this is a p tag.
-'''
-# story2 = CDATA(story2)
-'''
-title2 = CDATA(title2)
-creator = CDATA(creator)
-
-
-root[0][10][0].append(title2)
-root[0][10][3].append(creator)
-'''
-root[0][10][6].text = story2
-#root[0][10][6].remove(None)
-
-root[0][10][0].text = title2
-root[0][10][3].text = creator
-#root[0][10][6].text = story2
-
-#for child in root[0][10]:
-    #print child.text, 'after'
-
+root[0][10][6].append(story) # story
+root[0][10][0].text = title # title
+#root[0][10][3].text = creator
 
 tree.write("filename.xml",
            xml_declaration=True, encoding='utf-8',
            method="xml"
            )
-
-
-# https://wordpress.stackexchange.com/questions/82399/what-is-the-required-format-for-importing-posts-into-wordpress
-# http://stackoverflow.com/questions/4997848/emitting-namespace-specifications-with-elementtree-in-python
