@@ -4,12 +4,12 @@ from bs4 import BeautifulSoup
 import re
 
 #address = 'https://www.creativenonfiction.org/brevity/past%20issues/brev26hotcold/panning_vietnam.html'
-#address = 'https://www.creativenonfiction.org/brevity/past%20issues/brev28/calderazzo_accident.html'
+address = 'https://www.creativenonfiction.org/brevity/past%20issues/brev28/calderazzo_accident.html'
 #address = 'https://www.creativenonfiction.org/brevity/past%20issues/brev28/madden_catch.html'
 #address = 'https://www.creativenonfiction.org/brevity/past%20issues/brev28/svoboda_catholic.html'
 #address = 'https://www.creativenonfiction.org/brevity/past%20issues/brev28/doyle_child.html'
 #known issues
-address = 'https://www.creativenonfiction.org/brevity/past%20issues/brev18/borrowman_shillings.htm'
+#address = 'https://www.creativenonfiction.org/brevity/past%20issues/brev18/borrowman_shillings.htm'
 #address = 'https://www.creativenonfiction.org/brevity/past%20issues/brev25/gregory_enormous.htm'
 
 uh = urllib.urlopen(address)
