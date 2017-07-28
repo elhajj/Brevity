@@ -2,6 +2,7 @@ import urllib
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 import re
+import unicodedata
 
 # start CDATA hack
 
@@ -47,8 +48,6 @@ author = soup.find_all(text=re.compile('^By'))
 author = author[0].string
 author = author[3:]
 
-story = soup.find_all('p')
-
 shrtaddress = address[:64-len(address)] # this will break < issue 10
 image = soup.find_all('img')
 if len(soup.find_all('img')) != 2:
@@ -57,33 +56,16 @@ image = image[1]
 addy_append = image.get('src')
 image['src'] = shrtaddress+addy_append
 
-'''
-#insert the "__", remove the hr
-hr = soup.find_all('hr', align='left')
-if len(hr) != 1:
-    hr = soup.find_all('hr')
-hr = hr[0].wrap(soup.new_tag('p'))
-hr = hr.p
-tag = soup.new_tag('p')
-tag.string = '__\n'
-hr.insert(0,tag)
-'''
-'''
-ps = soup.find_all('p')
+story = soup.find_all('p')
 
-for i in ps:
-    print i
-    if "Brevity" in i.text:
-        i.decompose()        
-    if "strong" in i.name:
-        i.decompose()
-'''
+story = unicode.join(u'\n',map(unicode,story))
+story = unicodedata.normalize('NFKD', story).encode('ascii', 'ignore')
 
 
 print 'Title:', title
 print 'Author:', author
 print 'Issue', issue
-print 'Lines', len(story)
+print 'Lines/characters', len(story)
 
 # create xml
 
@@ -108,7 +90,7 @@ author = ET.SubElement(channel, 'wp:author')
 ET.SubElement(author, 'wp:author_id').text = '3'
 ET.SubElement(author, 'wp:author_login').text = 'elhajj'
 ET.SubElement(author, 'wp:author_email').text = 'tim.elhajj@gmail.com'
-ET.SubElement(author, 'wp:author_display_name').text = 'Tim ELhajj'
+ET.SubElement(author, 'wp:author_display_name').text = 'Tim Elhajj'
 ET.SubElement(author, 'wp:author_first_name').text = 'Tim'
 ET.SubElement(author, 'wp:author_last_name').text = 'Elhajj'
 category = ET.SubElement(channel, 'wp:category')
@@ -153,9 +135,9 @@ root = tree.getroot()
 
 story = CDATA(story)
 
-root[0][10][6].append(story) # story
-root[0][10][0].text = title # title
-#root[0][10][3].text = creator
+root[0][10][6].append(story)
+root[0][10][0].text = title
+
 
 tree.write("filename.xml",
            xml_declaration=True, encoding='utf-8',
